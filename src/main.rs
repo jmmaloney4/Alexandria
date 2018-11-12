@@ -6,10 +6,6 @@ use std::fs;
 
 #[macro_use] extern crate serde_derive;
 
-#[macro_use] extern crate rusqlite;
-use rusqlite::types::ToSql;
-use rusqlite::{Connection, NO_PARAMS};
-
 const FOLDER_NAME: &str = ".alex";
 const CONFIG_FILE: &str = "settings.toml";
 const DEFAULT_DB_PATH: &str = "library.db";
@@ -53,12 +49,11 @@ fn main() {
     let current_dir = std::env::current_dir().expect("Failed to get current directory").clone();
 
     let repo = Repository::open(current_dir).expect("Failed to open repo");
-    
+
 }
 
 struct Repository {
     path: PathBuf,
-    connection: Connection
 }
 
 impl Repository {
@@ -80,23 +75,19 @@ impl Repository {
     }
 
     fn open<P: AsRef<Path>>(path: P) -> Option<Repository> {
-        let mut repo = Repository { path: path.as_ref().to_path_buf(), connection: Connection::open_in_memory().expect("Error") };
+        let mut repo = Repository { path: path.as_ref().to_path_buf() };
     
         if !repo.repo_dir().exists() {
             return None;
         }
 
-        repo.connection = Connection::open(repo.db_path()).expect("Error!");
-
         return Some(repo);
     }
 
     fn create<P: AsRef<Path>>(path: P) -> Option<Repository> {
-        let mut repo = Repository { path: path.as_ref().to_path_buf(), connection: Connection::open_in_memory().expect("Error") };
+        let mut repo = Repository { path: path.as_ref().to_path_buf() };
 
         fs::create_dir(repo.repo_dir()).expect("Failed to create directory");
-
-        repo.connection = Connection::open(repo.db_path()).expect("Error!");
 
         return Some(repo);
     }
