@@ -4,11 +4,17 @@ use clap::{App, Arg, SubCommand};
 use std::path::{Path, PathBuf};
 use std::fs;
 
+use std::fs::File;
+use std::io::prelude::*;
+
 #[macro_use] extern crate serde_derive;
 
-const FOLDER_NAME: &str = ".alex";
+extern crate ring;
+use ring::digest::*;
+
+const REPO_DIR: &str = ".alex";
 const CONFIG_FILE: &str = "settings.toml";
-const DEFAULT_DB_PATH: &str = "library.db";
+const OBJECT_DIR: &str = "obj";
 
 fn main() {
     let matches = App::new("alex")
@@ -46,10 +52,46 @@ fn main() {
         3 | _ => println!("Don't be crazy"),
     }
 
+    if let Some(matches) = matches.subcommand_matches("hash-object") {
+        let mut buffer = String::new();
+
+         if matches.is_present("stdin") {
+            let stdin = std::io::stdin();
+            let mut handle = stdin.lock();
+
+            handle.read_to_string(&mut buffer).expect("Error reading from stdin");
+        } else if let Some(filename) = matches.value_of("file") {
+            let mut f = File::open(filename).expect("file not found");
+            
+            f.read_to_string(&mut buffer)
+                .expect("something went wrong reading the file");
+        } else {
+            panic!("Need input");
+        }
+
+        println!("{}", buffer);
+
+        let sha = digest(&SHA256, buffer.as_ref());
+        println!("{:x?}", sha.as_ref());
+        println!("{:?}", sha256_to_path(&sha));
+
+        let current_dir = std::env::current_dir().expect("Failed to get current directory").clone();
+
+    }
+
+    /*
+
+    let sha = digest(&SHA256, buffer.as_ref());
+            println!("{:x?}", sha.as_ref());
+
+    let sha = digest(&SHA256, contents.as_ref());
+    println!("{:?}", sha);
+    
     let current_dir = std::env::current_dir().expect("Failed to get current directory").clone();
 
     let repo = Repository::open(current_dir).expect("Failed to open repo");
 
+    */
 }
 
 struct Repository {
@@ -60,13 +102,7 @@ impl Repository {
     fn repo_dir(&self) -> PathBuf {
         let mut rv = PathBuf::new();
         rv.push(self.path.clone());
-        rv.push(Path::new(FOLDER_NAME));
-        rv
-    }
-
-    fn db_path(&self) -> PathBuf {
-        let mut rv = self.repo_dir();
-        rv.push(Path::new(DEFAULT_DB_PATH));
+        rv.push(Path::new(REPO_DIR));
         rv
     }
 
@@ -91,4 +127,24 @@ impl Repository {
 
         return Some(repo);
     }
+}
+
+fn sha256_to_path(sha256: &Digest) -> PathBuf {
+    let buf = sha256.as_ref();
+    let prefix_bytes = &buf[0];
+    let suffix_bytes = &buf[1..];
+
+    let prefix = &format!("{:x}", prefix_bytes);
+    let suffix = u8to_lower_hex(suffix_bytes);
+    let path_string = format!("{}/{}", prefix, suffix);
+
+    PathBuf::from(path_string)
+}
+
+fn u8to_lower_hex(input: &[u8]) -> String {
+    let mut s = String::new();
+    for &byte in input {
+        s.push_str(format!("{:x}", byte).as_ref());
+    }
+    return s;
 }
