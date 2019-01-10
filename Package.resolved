@@ -1,0 +1,34 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Cryptor",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueCryptor.git",
+        "state": {
+          "branch": null,
+          "revision": "25186dc1a53f3eb6d900853f659dff8b9af523aa",
+          "version": "1.0.23"
+        }
+      },
+      {
+        "package": "CommandLine",
+        "repositoryURL": "https://github.com/jmmaloney4/CommandLine.git",
+        "state": {
+          "branch": null,
+          "revision": "d84febdcfd4e84337bb90692a852cc47ac782af1",
+          "version": "3.1.1"
+        }
+      },
+      {
+        "package": "SwiftyJSON",
+        "repositoryURL": "https://github.com/IBM-Swift/SwiftyJSON.git",
+        "state": {
+          "branch": null,
+          "revision": "f2612ea3ac29996ae9601bdcb00cc1c29e26f104",
+          "version": "17.0.4"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
