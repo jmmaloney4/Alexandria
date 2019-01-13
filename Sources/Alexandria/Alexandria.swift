@@ -1,7 +1,7 @@
 import Foundation
 import Cryptor
 
-struct SHA256 {
+struct SHA256: CustomStringConvertible {
     var bytes: [UInt8]
     
     init(withData data: Data) {
@@ -12,8 +12,9 @@ struct SHA256 {
     }
     
     var hex: String {
-        return self.bytes.reduce("", { $0.appendingFormat("%02x", $1) })
+        return self.bytes.reduce(String(), { $0.appendingFormat("%02x", $1) })
     }
+    var description: String { return self.hex }
     
     var dbPath: String {
         let hex = self.hex
@@ -25,24 +26,11 @@ struct SHA256 {
 }
 
 struct Object {
-    var hash: SHA256 {
-        return SHA256(withData: self.data)
-    }
     var data: Data
+    var hash: SHA256 { return SHA256(withData: self.data) }
     
     init(withData data: Data) {
         self.data = data
-    }
-    
-    init(withPath path: String) {
-        guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else {
-            fatalError()
-        }
-        self.data = data
-    }
-    
-    func getDbPath() -> String {
-        return ""
     }
 }
 
@@ -58,6 +46,28 @@ struct Library {
     }
     
     func getObject(_ sha: SHA256) -> Object? {
+        let objPath = self.path.appendingPathComponent(sha.dbPath)
+
+        guard FileManager.default.fileExists(atPath: objPath.path) else {
+            return nil
+        }
+
+        do {
+            return Object(withData: try Data(contentsOf: objPath.appendingPathComponent("blob")))
+        } catch {
+            return nil
+        }
+    }
+    
+    func addData(_ data: Data) -> Object? {
+        let obj = Object(withData: data)
+        let objPath = self.path.appendingPathComponent(obj.hash.dbPath, isDirectory: true)
         
+        try! FileManager.default.createDirectory(at: objPath, withIntermediateDirectories: true)
+        try! obj.data.write(to: objPath.appendingPathComponent("blob"))
+        
+        assert(FileManager.default.fileExists(atPath: objPath.path))
+        
+        return obj
     }
 }

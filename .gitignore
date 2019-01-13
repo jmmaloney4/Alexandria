@@ -1,4 +1,6 @@
 .build/
 *.xcodeproj/
+**/.DS_Store
+test/
 
 poem.txt

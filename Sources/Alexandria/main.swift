@@ -16,7 +16,9 @@ let cli = CommandLineKit.CommandLine()
 
 let pathOption = StringOption(shortFlag: "f", longFlag: "file", required: true,
                                  helpMessage: "Path to the input file.")
-cli.addOptions(pathOption)
+let libOption = StringOption(shortFlag: "l", longFlag: "lib", required: true,
+                              helpMessage: "Path to the library.")
+cli.addOptions(pathOption, libOption)
 
 do {
     try cli.parse()
@@ -25,7 +27,18 @@ do {
     exit(EX_USAGE)
 }
 
-print(pathOption.value!)
+// print(libOption.value!)
+// print(pathOption.value!)
 
-let opt = Object(withPath: pathOption.value!)
+// var libPath = URL(fileURLWithPath: libOption.value!)
+/*
+let lib = Library(atPath: libOption.value!)
+let hash = lib.addData(try! Data(contentsOf: URL(fileURLWithPath: pathOption.value!)))!.hash
+print(hash)
+print(String(data: lib.getObject(hash)!.data, encoding: .utf8)!)
+*/
+
+let lib = Library(atPath: libOption.value!)
+let hash = lib.addData(try! Data(contentsOf: URL(fileURLWithPath: pathOption.value!)))!.hash
+print(hash)
 
