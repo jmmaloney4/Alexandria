@@ -15,14 +15,6 @@ struct SHA256: CustomStringConvertible {
         return self.bytes.reduce(String(), { $0.appendingFormat("%02x", $1) })
     }
     var description: String { return self.hex }
-    
-    var dbPath: String {
-        let hex = self.hex
-        let splitIndex = hex.index(hex.startIndex, offsetBy: 2)
-        let part1 = hex.prefix(upTo: splitIndex)
-        let part2 = hex.suffix(from: splitIndex)
-        return "\(part1)/\(part2)"
-    }
 }
 
 struct Object {
@@ -45,15 +37,23 @@ struct Library {
         self.init(atPath: URL(fileURLWithPath: path))
     }
     
+    func getDBPathForHash(_ sha: SHA256) -> URL {
+        let hex = sha.hex
+        let splitIndex = hex.index(hex.startIndex, offsetBy: 2)
+        let part1 = hex.prefix(upTo: splitIndex)
+        let part2 = hex.suffix(from: splitIndex)
+        return self.path.appendingPathComponent("\(part1)/\(part2)", isDirectory: true)
+    }
+    func getBlobFilePathForHash(_ sha: SHA256) -> URL { return self.getDBPathForHash(sha).appendingPathComponent("blob") }
+    func getMetaFilePathForHash(_ sha: SHA256) -> URL { return self.getDBPathForHash(sha).appendingPathComponent("meta.json") }
+    
     func getObject(_ sha: SHA256) -> Object? {
-        let objPath = self.path.appendingPathComponent(sha.dbPath)
-
-        guard FileManager.default.fileExists(atPath: objPath.path) else {
+        guard FileManager.default.fileExists(atPath: self.getDBPathForHash(sha).path) else {
             return nil
         }
 
         do {
-            return Object(withData: try Data(contentsOf: objPath.appendingPathComponent("blob")))
+            return Object(withData: try Data(contentsOf: self.getBlobFilePathForHash(sha)))
         } catch {
             return nil
         }
@@ -61,12 +61,11 @@ struct Library {
     
     func addData(_ data: Data) -> Object? {
         let obj = Object(withData: data)
-        let objPath = self.path.appendingPathComponent(obj.hash.dbPath, isDirectory: true)
         
-        try! FileManager.default.createDirectory(at: objPath, withIntermediateDirectories: true)
-        try! obj.data.write(to: objPath.appendingPathComponent("blob"))
+        try! FileManager.default.createDirectory(at: self.getDBPathForHash(obj.hash), withIntermediateDirectories: true)
+        try! obj.data.write(to: self.getBlobFilePathForHash(obj.hash))
         
-        assert(FileManager.default.fileExists(atPath: objPath.path))
+        assert(FileManager.default.fileExists(atPath: self.getBlobFilePathForHash(obj.hash).path))
         
         return obj
     }
