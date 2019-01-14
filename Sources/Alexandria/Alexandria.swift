@@ -1,5 +1,6 @@
 import Foundation
 import Cryptor
+import SwiftyJSON
 
 struct SHA256: CustomStringConvertible {
     var bytes: [UInt8]
@@ -19,11 +20,21 @@ struct SHA256: CustomStringConvertible {
 
 struct Object {
     var data: Data
+    var meta: JSON
     var hash: SHA256 { return SHA256(withData: self.data) }
     
-    init(withData data: Data) {
+    init(withData data: Data, meta: JSON? = nil) {
         self.data = data
+        self.meta = meta ?? [:]
+        self.meta["created"] = CurrentTimeJSON()
+        self.meta["author"] = JSON("John Doe")
     }
+}
+
+func CurrentTimeJSON() -> JSON {
+    let fmt = DateFormatter()
+    fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+    return JSON(fmt.string(from: Date()))
 }
 
 struct Library {
@@ -59,11 +70,15 @@ struct Library {
         }
     }
     
+    func writeObject(_ obj: Object) throws {
+        try FileManager.default.createDirectory(at: self.getDBPathForHash(obj.hash), withIntermediateDirectories: true)
+        try obj.data.write(to: self.getBlobFilePathForHash(obj.hash))
+        try obj.meta.rawData().write(to: self.getMetaFilePathForHash(obj.hash))
+    }
+    
     func addData(_ data: Data) -> Object? {
         let obj = Object(withData: data)
-        
-        try! FileManager.default.createDirectory(at: self.getDBPathForHash(obj.hash), withIntermediateDirectories: true)
-        try! obj.data.write(to: self.getBlobFilePathForHash(obj.hash))
+        try! self.writeObject(obj)
         
         assert(FileManager.default.fileExists(atPath: self.getBlobFilePathForHash(obj.hash).path))
         
