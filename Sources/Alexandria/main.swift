@@ -42,3 +42,4 @@ let lib = Library(atPath: libOption.value!)
 let hash = lib.addData(try! Data(contentsOf: URL(fileURLWithPath: pathOption.value!)))!.hash
 print(hash)
 
+print(Config.default.user)

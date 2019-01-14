@@ -85,3 +85,31 @@ struct Library {
         return obj
     }
 }
+
+struct User: CustomStringConvertible {
+    var name: String
+    var email: String
+    
+    init(name: String?, email: String?) {
+        self.name = name ?? "Unknown"
+        self.email = email ?? "Unknown"
+    }
+    
+    var description: String {
+        return "\(self.name) <\(self.email)>"
+    }
+}
+
+struct Config {
+    var json: JSON
+    
+    init(withPath path: String) throws {
+        self.json = JSON(data: try Data(contentsOf: URL(fileURLWithPath: path)))
+    }
+    
+    static var `default` = try! Config(withPath: NSString(string: "~/.alex/config.json").expandingTildeInPath)
+    
+    var user: User {
+        return User(name: self.json["user"]["name"].string, email: self.json["user"]["email"].string)
+    }
+}
