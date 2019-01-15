@@ -100,6 +100,7 @@ struct User: CustomStringConvertible {
     }
 }
 
+// Could later use https://github.com/IBM-Swift/Configuration.git
 struct Config {
     var json: JSON
     
@@ -111,5 +112,9 @@ struct Config {
     
     var user: User {
         return User(name: self.json["user"]["name"].string, email: self.json["user"]["email"].string)
+    }
+    
+    var library: Library {
+        return Library(atPath: NSString(string: self.json["library"].string!).expandingTildeInPath)
     }
 }

@@ -6,12 +6,12 @@
 //
 
 import Foundation
-import CommandLineKit
+import SwiftCLI
 
 #if os(Linux)
 let EX_USAGE: Int32 = 64 // swiftlint:disable:this identifier_name
 #endif
-
+/*
 let cli = CommandLineKit.CommandLine()
 
 let pathOption = StringOption(shortFlag: "f", longFlag: "file", required: true,
@@ -26,6 +26,7 @@ do {
     cli.printUsage(error)
     exit(EX_USAGE)
 }
+ */
 
 // print(libOption.value!)
 // print(pathOption.value!)
@@ -37,9 +38,14 @@ let hash = lib.addData(try! Data(contentsOf: URL(fileURLWithPath: pathOption.val
 print(hash)
 print(String(data: lib.getObject(hash)!.data, encoding: .utf8)!)
 */
-
+/*
 let lib = Library(atPath: libOption.value!)
 let hash = lib.addData(try! Data(contentsOf: URL(fileURLWithPath: pathOption.value!)))!.hash
 print(hash)
 
 print(Config.default.user)
+*/
+
+let cli = CLI(name: "alex", version: "1.0.0")
+cli.commands = [StoreCommand()]
+cli.goAndExit()

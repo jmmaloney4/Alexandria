@@ -11,12 +11,12 @@
         }
       },
       {
-        "package": "CommandLine",
-        "repositoryURL": "https://github.com/jmmaloney4/CommandLine.git",
+        "package": "SwiftCLI",
+        "repositoryURL": "https://github.com/jakeheis/SwiftCLI.git",
         "state": {
           "branch": null,
-          "revision": "d84febdcfd4e84337bb90692a852cc47ac782af1",
-          "version": "3.1.1"
+          "revision": "5318c37d3cacc8780f50b87a8840a6774320ebdf",
+          "version": "5.2.2"
         }
       },
       {
