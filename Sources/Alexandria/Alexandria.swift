@@ -12,10 +12,24 @@ struct SHA256: CustomStringConvertible {
         self.bytes = digest.final()
     }
     
+    init(withHex hex: String) throws {
+        self.bytes = hex.hexa2Bytes
+        guard self.bytes.count == 32 else {
+            fatalError()
+        }
+    }
+    
     var hex: String {
         return self.bytes.reduce(String(), { $0.appendingFormat("%02x", $1) })
     }
     var description: String { return self.hex }
+}
+
+extension StringProtocol {
+    var hexa2Bytes: [UInt8] {
+        let hexa = Array(self)
+        return stride(from: 0, to: count, by: 2).compactMap { UInt8(String(hexa[$0...$0.advanced(by: 1)]), radix: 16) }
+    }
 }
 
 struct Object {

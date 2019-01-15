@@ -47,5 +47,5 @@ print(Config.default.user)
 */
 
 let cli = CLI(name: "alex", version: "1.0.0")
-cli.commands = [StoreCommand()]
+cli.commands = [StoreCommand(), CatCommand()]
 cli.goAndExit()

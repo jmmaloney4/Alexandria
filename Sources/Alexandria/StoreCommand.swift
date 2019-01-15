@@ -66,3 +66,21 @@ class StoreCommand: Command {
         }
     }
 }
+
+class CatCommand: Command {
+    var name = "cat"
+    var hashes = CollectedParameter()
+
+    func execute() throws {
+        let shas = hashes.value.compactMap({ try? SHA256(withHex: $0) })
+        
+        for sha in shas {
+            guard let obj = Config.default.library.getObject(sha) else {
+                fatalError()
+            }
+            print(String(data: obj.data, encoding: .utf8) ?? obj.data, separator: "")
+        }
+    }
+    
+    
+}
