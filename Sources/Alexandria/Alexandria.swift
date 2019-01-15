@@ -26,15 +26,15 @@ struct Object {
     init(withData data: Data, meta: JSON? = nil) {
         self.data = data
         self.meta = meta ?? [:]
-        self.meta["created"] = CurrentTimeJSON()
+        self.meta["created"] = JSON(CurrentTimeString())
         self.meta["author"] = JSON("John Doe")
     }
 }
 
-func CurrentTimeJSON() -> JSON {
+func CurrentTimeString() -> String {
     let fmt = DateFormatter()
     fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-    return JSON(fmt.string(from: Date()))
+    return fmt.string(from: Date())
 }
 
 struct Library {
@@ -77,6 +77,8 @@ struct Library {
     }
     
     func addData(_ data: Data) -> Object? {
+        
+        
         let obj = Object(withData: data)
         try! self.writeObject(obj)
         
