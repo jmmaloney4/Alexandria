@@ -19,7 +19,7 @@ class StoreCommand: Command {
         let urls = paths.value.map({ URL(fileURLWithPath: $0) })
             .filter { url in
                 do {
-                    guard try url.checkResourceIsReachable() else { fatalError() }
+                    guard try url.checkResourceIsReachable() else { throw AlexandriaError.fileDoesNotExist(url.path, false) }
                 } catch { fatalError() }
                 return true
         }
@@ -81,6 +81,6 @@ class CatCommand: Command {
             print(String(data: obj.data, encoding: .utf8) ?? obj.data, separator: "")
         }
     }
-    
-    
 }
+
+

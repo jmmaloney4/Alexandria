@@ -42,7 +42,7 @@ struct Object {
         self.meta = meta ?? [:]
         self.meta["created"] = JSON(CurrentTimeString())
         self.meta["author"] = JSON("John Doe")
-    }
+    }                                                                                                               
 }
 
 func CurrentTimeString() -> String {
