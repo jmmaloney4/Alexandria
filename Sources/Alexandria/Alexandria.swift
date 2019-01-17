@@ -61,71 +61,6 @@ struct Object {
     }
  }
 
-struct File {
-    var object: Object
-    var meta: Metadata
-    
-    init(fromFileSystem path: URL) throws {
-        guard FileManager.default.fileExists(atPath: path.path) else { fatalError() }
-        self.object = Object(withData: try Data(contentsOf: path), kind: .blob)
-        self.meta = try Metadata(forFileAtPath: path, hash: self.object.hash)
-    }
-    
-    init(fromDatabase hash: SHA256, withResolver resolver: Library.PathResolver) throws {
-        let metaPath = resolver.getDBPathForHash(hash)
-        guard try metaPath.checkResourceIsReachable() else { fatalError() }
-        let metaObj = try Object(atURL: metaPath)
-        self.meta = try JSONDecoder().decode(Metadata.self, from: metaObj.data)
-        
-        self.object = try Object(loadHash: self.meta.object, withResolver: resolver)
-    }
-    
-    struct Metadata: Codable {
-        var name: String
-        var author: User
-        var object: SHA256
-        var original: SHA256?
-        var created: Date
-        
-        enum CodingKeys: String, CodingKey {
-            case name
-            case author
-            case object
-            case original
-            case created
-        }
-        
-        init(from decoder: Decoder) throws {
-            let values = try decoder.container(keyedBy: CodingKeys.self)
-            
-            self.name = try values.decode(String.self, forKey: .name)
-            self.author = try values.decode(User.self, forKey: .author)
-            self.object = try values.decode(SHA256.self, forKey: .object)
-            self.original = try? values.decode(SHA256.self, forKey: .original)
-            self.created = DateForString(try values.decode(String.self, forKey: .created)).expect("Couldn't decode date")
-        }
-        
-        init(forFileAtPath path: URL, hash: SHA256) throws {
-            self.name = path.lastPathComponent
-            self.author = Config.default.user
-            self.object = hash
-            self.original = nil
-            self.created = Date()
-        }
-        
-        func makeObject() -> Object {
-            do {
-                return Object(withData: try JSONEncoder().encode(self), kind: .meta)
-            } catch { fatalError() }
-        }
-    }
-}
-
-struct Version {
-    var data: Object
-    var meta: File.Metadata
-}
-
 func CurrentTimeString() -> String {
     let fmt = DateFormatter()
     fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
@@ -136,57 +71,6 @@ func DateForString(_ str: String) -> Date? {
     let fmt = DateFormatter()
     fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
     return fmt.date(from: str)
-}
-
-struct Library {
-    var path: URL
-    
-    struct PathResolver {
-        var lib: Library
-        
-        func getDBPathForHash(_ sha: SHA256) -> URL {
-            let hex = sha.hex
-            let splitIndex = hex.index(hex.startIndex, offsetBy: 2)
-            let part1 = hex.prefix(upTo: splitIndex)
-            let part2 = hex.suffix(from: splitIndex)
-            return self.lib.path.appendingPathComponent("\(part1)/\(part2)", isDirectory: false)
-        }
-        
-        func getDBPrefixDirPath(_ sha: SHA256) -> URL {
-            let hex = sha.hex
-            let splitIndex = hex.index(hex.startIndex, offsetBy: 2)
-            let part1 = hex.prefix(upTo: splitIndex)
-            return self.lib.path.appendingPathComponent(String(part1), isDirectory: true)
-        }
-    }
-    var resolver: PathResolver { return PathResolver(lib: self) }
-    
-    init(atPath path: URL) {
-        self.path = path
-    }
-    
-    init(atPath path: String) {
-        self.init(atPath: URL(fileURLWithPath: path))
-    }
-    
-    func getFile(_ sha: SHA256) throws -> File {
-        return try File(fromDatabase: sha, withResolver: self.resolver)
-    }
-    
-    func addFile(_ file: File) {
-        
-    }
-    
-    
-    func writeObject(_ obj: Object) throws {
-        if !FileManager.default.fileExists(atPath: self.resolver.getDBPrefixDirPath(obj.hash).path) {
-            try FileManager.default.createDirectory(at: self.resolver.getDBPrefixDirPath(obj.hash), withIntermediateDirectories: true)
-        }
-        
-        guard var toWrite = obj.kind.rawValue.data(using: .utf8) else { fatalError() }
-        toWrite.append(obj.data)
-        try toWrite.write(to: path)
-    }
 }
 
 struct User: Codable, CustomStringConvertible {
