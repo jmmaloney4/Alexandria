@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "Optionals",
+        "repositoryURL": "https://github.com/jmmaloney4/Optionals.git",
+        "state": {
+          "branch": "master",
+          "revision": "c92fa5533ead9300bd12ccd833c64ebe99c839d7",
+          "version": null
+        }
+      },
+      {
         "package": "SwiftCLI",
         "repositoryURL": "https://github.com/jakeheis/SwiftCLI.git",
         "state": {
