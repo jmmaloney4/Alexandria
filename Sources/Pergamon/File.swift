@@ -33,6 +33,12 @@ public struct File {
         return self.meta.name
     }
     
+    func update(toFile path: URL) throws -> File {
+        var rv: File = try File(fromFileSystem: path)
+        rv.meta.original = self.hash
+        return rv
+    }
+    
     struct Metadata: Codable {
         var name: String
         var author: User

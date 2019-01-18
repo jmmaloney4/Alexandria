@@ -46,6 +46,15 @@ public struct Library {
         try writeObject(file.meta.makeObject())
     }
     
+    public func updateFile(_ original: File, to file: File) throws -> File {
+        var rv = file
+        if rv.meta.original != nil && rv.meta.original! != original.hash {
+            rv.meta.original = original.hash
+        }
+        try self.addFile(rv)
+        return rv
+    }
+    
     func writeObject(_ obj: Object) throws {
         if !FileManager.default.fileExists(atPath: self.resolver.getDBPrefixDirPath(obj.hash).path) {
             try FileManager.default.createDirectory(at: self.resolver.getDBPrefixDirPath(obj.hash), withIntermediateDirectories: true)

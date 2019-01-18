@@ -8,5 +8,5 @@ import Foundation
 import SwiftCLI
 
 let cli = CLI(name: "mon", version: "1.0.0")
-cli.commands = [StoreCommand(), CatCommand()]
+cli.commands = [StoreCommand(), CatCommand(), UpdateCommand()]
 cli.goAndExit()

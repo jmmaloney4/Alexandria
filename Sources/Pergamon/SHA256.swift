@@ -7,7 +7,7 @@
 import Foundation
 import Cryptor
 
-public struct SHA256: Codable, CustomStringConvertible {
+public struct SHA256: Codable, CustomStringConvertible, Equatable {
     public internal(set) var bytes: [UInt8]
     
     public init(withData data: Data) {
