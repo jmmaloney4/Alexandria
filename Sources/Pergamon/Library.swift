@@ -5,6 +5,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import Foundation
+import SQLite3
 
 public struct Library {
     var path: URL
@@ -12,19 +13,31 @@ public struct Library {
     struct PathResolver {
         var lib: Library
         
+        var objectDir: URL {
+            return lib.path.appendingPathComponent("obj")
+        }
+        
+        var indexDir: URL {
+            return lib.path.appendingPathComponent("index")
+        }
+        
         func getDBPathForHash(_ sha: SHA256) -> URL {
             let hex = sha.hex
             let splitIndex = hex.index(hex.startIndex, offsetBy: 2)
             let part1 = hex.prefix(upTo: splitIndex)
             let part2 = hex.suffix(from: splitIndex)
-            return self.lib.path.appendingPathComponent("\(part1)/\(part2)", isDirectory: false)
+            return self.objectDir.appendingPathComponent("\(part1)/\(part2)", isDirectory: false)
         }
         
         func getDBPrefixDirPath(_ sha: SHA256) -> URL {
             let hex = sha.hex
             let splitIndex = hex.index(hex.startIndex, offsetBy: 2)
             let part1 = hex.prefix(upTo: splitIndex)
-            return self.lib.path.appendingPathComponent(String(part1), isDirectory: true)
+            return self.objectDir.appendingPathComponent(String(part1), isDirectory: true)
+        }
+        
+        func getIndexFileForHash(_ sha: SHA256) -> URL {
+            return self.indexDir.appendingPathComponent(sha.hex)
         }
     }
     var resolver: PathResolver { return PathResolver(lib: self) }
@@ -48,9 +61,7 @@ public struct Library {
     
     public func updateFile(_ original: File, to file: File) throws -> File {
         var rv = file
-        if rv.meta.original != nil && rv.meta.original! != original.hash {
-            rv.meta.original = original.hash
-        }
+        rv.meta.original = original.hash
         try self.addFile(rv)
         return rv
     }

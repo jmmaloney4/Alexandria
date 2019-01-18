@@ -14,9 +14,8 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/IBM-Swift/BlueCryptor.git", from: "1.0.0"),
-        // .package(url: "https://github.com/IBM-Swift/SwiftyJSON.git", from: "17.0.0"),
         .package(url: "https://github.com/jakeheis/SwiftCLI.git", from: "5.2.0"),
-        .package(url: "https://github.com/jmmaloney4/Optionals.git", .branch("master")),
+        .package(url: "https://github.com/jmmaloney4/Optionals.git", .branch("master"))
         
     ],
     targets: [

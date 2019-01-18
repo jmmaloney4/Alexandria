@@ -43,6 +43,7 @@ public struct File {
         var name: String
         var author: User
         var object: SHA256
+        var previous: SHA256?
         var original: SHA256?
         var created: Date
         
@@ -50,6 +51,7 @@ public struct File {
             case name
             case author
             case object
+            case previous
             case original
             case created
         }
@@ -60,6 +62,7 @@ public struct File {
             self.name = try values.decode(String.self, forKey: .name)
             self.author = try values.decode(User.self, forKey: .author)
             self.object = try values.decode(SHA256.self, forKey: .object)
+            self.previous = try? values.decode(SHA256.self, forKey: .previous)
             self.original = try? values.decode(SHA256.self, forKey: .original)
             self.created = UnformatDate(try values.decode(String.self, forKey: .created)).expect("Couldn't decode date")
         }
@@ -70,6 +73,7 @@ public struct File {
             try container.encode(self.name, forKey: .name)
             try container.encode(self.author, forKey: .author)
             try container.encode(self.object, forKey: .object)
+            try container.encode(self.previous, forKey: .previous)
             try container.encode(self.original, forKey: .original)
             try container.encode(FormatDate(self.created) , forKey: .created)
         }
@@ -79,6 +83,7 @@ public struct File {
             self.author = Config.default.user
             self.object = hash
             self.original = nil
+            self.previous = nil
             self.created = Date()
         }
         
@@ -88,11 +93,6 @@ public struct File {
             } catch { fatalError() }
         }
     }
-}
-
-struct Version {
-    var data: Object
-    var meta: File.Metadata
 }
 
 func FormatDate(_ date: Date) -> String {

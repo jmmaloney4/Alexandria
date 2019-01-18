@@ -20,21 +20,21 @@
         }
       },
       {
+        "package": "SQLite.swift",
+        "repositoryURL": "https://github.com/stephencelis/SQLite.swift.git",
+        "state": {
+          "branch": "master",
+          "revision": "ed8f603f856e9f1f4adb76b63b7234547257ec5a",
+          "version": null
+        }
+      },
+      {
         "package": "SwiftCLI",
         "repositoryURL": "https://github.com/jakeheis/SwiftCLI.git",
         "state": {
           "branch": null,
           "revision": "5318c37d3cacc8780f50b87a8840a6774320ebdf",
           "version": "5.2.2"
-        }
-      },
-      {
-        "package": "SwiftyJSON",
-        "repositoryURL": "https://github.com/IBM-Swift/SwiftyJSON.git",
-        "state": {
-          "branch": null,
-          "revision": "f2612ea3ac29996ae9601bdcb00cc1c29e26f104",
-          "version": "17.0.4"
         }
       }
     ]
