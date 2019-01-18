@@ -1,23 +1,22 @@
+// Copyright © 2018-2019 Jack Maloney. All Rights Reserved.
 //
-//  File.swift
-//  Alexandria
-//
-//  Created by Jack Maloney on 1/17/19.
-//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import Foundation
 
-struct File {
+public struct File {
     var object: Object
     var meta: Metadata
     
-    init(fromFileSystem path: URL) throws {
+    public init(fromFileSystem path: URL) throws {
         guard FileManager.default.fileExists(atPath: path.path) else { fatalError() }
         self.object = Object(withData: try Data(contentsOf: path), kind: .blob)
         self.meta = try Metadata(forFileAtPath: path, hash: self.object.hash)
     }
     
-    init(fromDatabase hash: SHA256, withResolver resolver: Library.PathResolver) throws {
+    internal init(fromDatabase hash: SHA256, withResolver resolver: Library.PathResolver) throws {
         let metaPath = resolver.getDBPathForHash(hash)
         guard try metaPath.checkResourceIsReachable() else { fatalError() }
         let metaObj = try Object(atURL: metaPath)
@@ -26,11 +25,11 @@ struct File {
         self.object = try Object(loadHash: self.meta.object, withResolver: resolver)
     }
     
-    var hash: SHA256 {
+    public var hash: SHA256 {
         return self.meta.makeObject().hash
     }
     
-    var name: String {
+    public var name: String {
         return self.meta.name
     }
     

@@ -1,13 +1,12 @@
+// Copyright © 2018-2019 Jack Maloney. All Rights Reserved.
 //
-//  Library.swift
-//  Alexandria
-//
-//  Created by Jack Maloney on 1/17/19.
-//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import Foundation
 
-struct Library {
+public struct Library {
     var path: URL
     
     struct PathResolver {
@@ -38,11 +37,11 @@ struct Library {
         self.init(atPath: URL(fileURLWithPath: path))
     }
     
-    func getFile(_ sha: SHA256) throws -> File {
+    public func getFile(_ sha: SHA256) throws -> File {
         return try File(fromDatabase: sha, withResolver: self.resolver)
     }
     
-    func addFile(_ file: File) throws {
+    public func addFile(_ file: File) throws {
         try writeObject(file.object)
         try writeObject(file.meta.makeObject())
     }

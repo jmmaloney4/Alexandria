@@ -1,12 +1,12 @@
+// Copyright © 2018-2019 Jack Maloney. All Rights Reserved.
 //
-//  HashObjectCommand.swift
-//  Alexandria
-//
-//  Created by Jack Maloney on 1/14/19.
-//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import Foundation
 import SwiftCLI
+import Pergamon
 
 class StoreCommand: Command {
     var name = "store"
@@ -20,7 +20,7 @@ class StoreCommand: Command {
         let urls = paths.value.map({ URL(fileURLWithPath: $0) })
             .filter { url in
                 do {
-                    guard try url.checkResourceIsReachable() else { throw AlexandriaError.fileDoesNotExist(url.path, false) }
+                    guard try url.checkResourceIsReachable() else { fatalError() }
                 } catch { fatalError() }
                 return true
         }
@@ -48,6 +48,5 @@ class StoreCommand: Command {
             print(str)
         }
     }
-    
 }
 
