@@ -1,9 +1,8 @@
+// Copyright © 2018-2019 Jack Maloney. All Rights Reserved.
 //
-//  SHA256.swift
-//  Cryptor
-//
-//  Created by Jack Maloney on 1/17/19.
-//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import Foundation
 import Cryptor
@@ -23,6 +22,17 @@ public struct SHA256: Codable, CustomStringConvertible {
         guard self.bytes.count == 32 else {
             fatalError()
         }
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let str = try container.decode(String.self)
+        try self.init(withHex: str)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.hex)
     }
     
     public var hex: String {

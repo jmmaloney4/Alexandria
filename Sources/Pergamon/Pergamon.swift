@@ -8,10 +8,10 @@ import Foundation
 import Cryptor
 import Optionals
 
-struct Object {
-    var data: Data
-    var kind: Kind
-    var hash: SHA256 { return SHA256(withData: self.data) }
+public struct Object {
+    public private(set) var data: Data
+    public private(set) var kind: Kind
+    public var hash: SHA256 { return SHA256(withData: self.data) }
     
     init(withData data: Data, kind: Kind) {
         self.data = data
@@ -30,23 +30,11 @@ struct Object {
         try self.init(atURL: resolver.getDBPathForHash(hash))
     }
     
-    enum Kind: String {
+    public enum Kind: String {
         case blob
         case meta
     }
  }
-
-func CurrentTimeString() -> String {
-    let fmt = DateFormatter()
-    fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-    return fmt.string(from: Date())
-}
-
-func DateForString(_ str: String) -> Date? {
-    let fmt = DateFormatter()
-    fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-    return fmt.date(from: str)
-}
 
 public struct User: Codable, CustomStringConvertible {
     public private(set) var name: String

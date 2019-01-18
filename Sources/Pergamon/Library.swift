@@ -52,6 +52,7 @@ public struct Library {
         }
         
         guard var toWrite = obj.kind.rawValue.data(using: .utf8) else { fatalError() }
+        toWrite.append(contentsOf: [0])
         toWrite.append(obj.data)
         try toWrite.write(to: resolver.getDBPathForHash(obj.hash))
     }
